@@ -14,12 +14,12 @@ provides a candidate to come under the management of terraform.
 | :heavy_check_mark: | Yes. Can be developed.                                                                           |
 | :x:                | No: Either not technically possible, or provides no benefit to being under Terraform management. |
 | :microscope:       | Yet to be investigated and documented.                                                           |
-| :question_mark:    | To be decided.                                                                                   |
+| :question:         | To be decided.                                                                                   |
 
 | Endpoint                                | Supported Methods | Resource Candidate | Data Source Candidate | API Documentation Link                                                            |
 |-----------------------------------------|-------------------|--------------------|-----------------------|-----------------------------------------------------------------------------------|
 | `/api/application`                      | `C R U D`         | :heavy_check_mark: | :heavy_check_mark:    | https://fusionauth.io/docs/v1/tech/apis/applications                              |
-| `/api/application/oauth-configuration`  | `- R - -`         | :x:                | :question_mark:       | https://fusionauth.io/docs/v1/tech/apis/applications#retrieve-oauth-configuration |
+| `/api/application/oauth-configuration`  | `- R - -`         | :x:                | :question:            | https://fusionauth.io/docs/v1/tech/apis/applications#retrieve-oauth-configuration |
 | `/api/application/role`                 | `C - U D`         | :heavy_check_mark: | :x:                   | https://fusionauth.io/docs/v1/tech/apis/applications#create-an-application-role   |
 | `/api/cleanspeak/notify`                | `C R U D`         | :microscope:       | :microscope:          |                                                                                   |
 | `/api/connector`                        | `C R U D`         | :microscope:       | :microscope:          |                                                                                   |
