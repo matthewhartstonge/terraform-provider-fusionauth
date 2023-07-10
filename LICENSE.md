@@ -1,3 +1,5 @@
+Copyright (c) 2023 Matthew Hartstonge <matt@mykro.co.nz>
+
 Mozilla Public License Version 2.0
 ==================================
 
