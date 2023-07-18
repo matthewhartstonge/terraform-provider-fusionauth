@@ -8,18 +8,18 @@ package provider
 import (
 	// Standard Library Imports
 	"context"
-	"net/http"
 	"net/url"
 	"os"
-	"time"
 
 	// External Imports
-	"github.com/FusionAuth/go-client/pkg/fusionauth"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	// Internal Imports
+	faClient "github.com/matthewhartstonge/terraform-provider-fusionauth/internal/client"
 )
 
 const (
@@ -30,16 +30,6 @@ const (
 
 // Ensure FusionAuthProvider satisfies various provider interfaces.
 var _ provider.Provider = &FusionAuthProvider{}
-
-// FusionAuthClient defines the encapsulated data passed to terraform data and
-// resources.
-type FusionAuthClient struct {
-	// API stores the underlying fusionauth api client
-	API *fusionauth.FusionAuthClient
-	// Tenant stores the user configured tenant id for requests that require a
-	// tenant.
-	Tenant string
-}
 
 // FusionAuthProvider defines the provider implementation.
 type FusionAuthProvider struct {
@@ -139,13 +129,7 @@ func (p *FusionAuthProvider) Configure(ctx context.Context, req provider.Configu
 	}
 
 	// client configuration for data sources and resources
-	httpClient := &http.Client{
-		Timeout: time.Second * 10,
-	}
-	client := FusionAuthClient{
-		API:    fusionauth.NewClient(httpClient, baseURL, apiToken),
-		Tenant: tenant,
-	}
+	client := faClient.New(baseURL, apiToken, tenant)
 
 	// Bind in the client data
 	resp.DataSourceData = client
