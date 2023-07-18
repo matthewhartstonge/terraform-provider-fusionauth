@@ -3,6 +3,7 @@ module github.com/matthewhartstonge/terraform-provider-fusionauth
 go 1.19
 
 require (
+	github.com/FusionAuth/go-client v0.0.0-20230313185644-4aefe6d7b4c8
 	github.com/hashicorp/terraform-plugin-docs v0.16.0
 	github.com/hashicorp/terraform-plugin-framework v1.3.2
 	github.com/hashicorp/terraform-plugin-go v0.18.0
@@ -11,7 +12,6 @@ require (
 )
 
 require (
-	github.com/FusionAuth/go-client v0.0.0-20230313185644-4aefe6d7b4c8 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
