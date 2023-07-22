@@ -138,7 +138,7 @@ func (p *FusionAuthProvider) Configure(ctx context.Context, req provider.Configu
 
 func (p *FusionAuthProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewExampleResource,
+		NewTenantResource,
 	}
 }
 
