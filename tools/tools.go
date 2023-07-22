@@ -1,3 +1,5 @@
+//go:build tools
+
 /*
  * Copyright (c) Matthew Hartstonge <matt@mykro.co.nz>
  * SPDX-License-Identifier: MPL-2.0
