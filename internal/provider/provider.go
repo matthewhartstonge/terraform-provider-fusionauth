@@ -55,7 +55,7 @@ func (p *FusionAuthProvider) Schema(ctx context.Context, req provider.SchemaRequ
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"api_token": schema.StringAttribute{
-				MarkdownDescription: "FusionAuth API Token. Can also be set with the `" + envEndpoint + "` environment variable.",
+				MarkdownDescription: "FusionAuth API Token. Can also be set with the `" + envApiToken + "` environment variable.",
 				Optional:            true,
 			},
 			"endpoint": schema.StringAttribute{
