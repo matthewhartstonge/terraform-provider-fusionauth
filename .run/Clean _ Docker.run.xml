@@ -1,0 +1,13 @@
+<!--
+  ~ Copyright (c) Matthew Hartstonge <matt@mykro.co.nz>
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Clean | Docker" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
+    <makefile filename="$PROJECT_DIR$/GNUmakefile" target="clean" workingDirectory="$PROJECT_DIR$" arguments="">
+      <envs />
+    </makefile>
+    <method v="2" />
+  </configuration>
+</component>
