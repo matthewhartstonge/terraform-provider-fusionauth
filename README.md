@@ -7,8 +7,9 @@ allows [Terraform](https://terraform.io) to manage [FusionAuth](https://fusionau
 
 ## Status
 
-This is a pre-alpha project in a quest to create a FusionAuth provider using best practises and the
-latest `terraform-plugin-framework` which is in **technical preview**.
+This is a pre-alpha project in a quest to create a FusionAuth provider using best practises and the latest `terraform-plugin-framework`. 
+
+This project is not currently taking contributions. This will be reviewed at a later date after the initial project has well-formed patterns.
 
 ## Requirements
 
