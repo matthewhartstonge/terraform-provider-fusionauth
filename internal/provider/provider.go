@@ -143,9 +143,7 @@ func (p *FusionAuthProvider) Resources(ctx context.Context) []func() resource.Re
 }
 
 func (p *FusionAuthProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewExampleDataSource,
-	}
+	return []func() datasource.DataSource{}
 }
 
 func New(version string) func() provider.Provider {
