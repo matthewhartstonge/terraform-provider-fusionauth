@@ -6,19 +6,16 @@
 package provider
 
 import (
-	// Standard Library Imports
 	"context"
 	"net/url"
 	"os"
 
-	// External Imports
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	// Internal Imports
 	faClient "github.com/matthewhartstonge/terraform-provider-fusionauth/internal/client"
 )
 
@@ -53,6 +50,9 @@ func (p *FusionAuthProvider) Metadata(ctx context.Context, req provider.Metadata
 
 func (p *FusionAuthProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description:         "",
+		MarkdownDescription: "",
+
 		Attributes: map[string]schema.Attribute{
 			"api_token": schema.StringAttribute{
 				MarkdownDescription: "FusionAuth API Token. Can also be set with the `" + envApiToken + "` environment variable.",

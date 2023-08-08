@@ -6,15 +6,12 @@
 package main
 
 import (
-	// Standard Library Imports
 	"context"
 	"flag"
 	"log"
 
-	// External Imports
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 
-	// Internal Imports
 	"github.com/matthewhartstonge/terraform-provider-fusionauth/internal/provider"
 )
 

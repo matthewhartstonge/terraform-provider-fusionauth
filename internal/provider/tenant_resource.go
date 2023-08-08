@@ -6,11 +6,9 @@
 package provider
 
 import (
-	// Standard Library Imports
 	"context"
 	"fmt"
 
-	// External Imports
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -18,7 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/matthewhartstonge/terraform-plugin-framework-type-uuid/uuidtypes"
 
-	// Internal Imports
 	faClient "github.com/matthewhartstonge/terraform-provider-fusionauth/internal/client"
 )
 

@@ -6,12 +6,10 @@
 package client
 
 import (
-	// Standard Library Imports
 	"net/http"
 	"net/url"
 	"time"
 
-	// External Imports
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
 )
 

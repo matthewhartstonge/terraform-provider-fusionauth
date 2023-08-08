@@ -6,11 +6,9 @@
 package provider
 
 import (
-	// Standard Library Imports
 	"fmt"
 	"testing"
 
-	// External Imports
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 

@@ -6,11 +6,9 @@
 package provider
 
 import (
-	// Standard Library Imports
 	"os"
 	"testing"
 
-	// External Imports
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 )

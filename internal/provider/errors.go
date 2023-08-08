@@ -6,10 +6,8 @@
 package provider
 
 import (
-	// Standard Library Imports
 	"fmt"
 
-	// External Imports
 	"github.com/FusionAuth/go-client/pkg/fusionauth"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
