@@ -94,7 +94,7 @@ func (t *TenantResource) Configure(ctx context.Context, req resource.ConfigureRe
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *http.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *faClient.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
