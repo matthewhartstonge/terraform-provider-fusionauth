@@ -38,20 +38,6 @@ type TenantResource struct {
 	client *faClient.Client
 }
 
-// TenantResourceModel describes the resource data model.
-type TenantResourceModel struct {
-	Id   uuidtypes.UUID `tfsdk:"id"`
-	Name types.String   `tfsdk:"name"`
-
-	//Captcha struct {
-	//	Enabled       types.Bool   `tfsdk:"enabled"`
-	//	CaptchaMethod types.String `tfsdk:"captcha_method"`
-	//	SecretKey     types.String `tfsdk:"secret_key"`
-	//	SiteKey       types.String `tfsdk:"site_key"`
-	//	Threshold     types.Float64  `tfsdk:"threshold"`
-	//} `tfsdk:"captcha"`
-}
-
 func (t *TenantResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_tenant"
 }
@@ -118,7 +104,7 @@ func (t *TenantResource) Configure(ctx context.Context, req resource.ConfigureRe
 }
 
 func (t *TenantResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var data *TenantResourceModel
+	var data *tenantResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -127,347 +113,14 @@ func (t *TenantResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	payload := fusionauth.TenantRequest{
-		SourceTenantId: data.Id.ValueString(),
-		Tenant: fusionauth.Tenant{
-			//Configured:                     false,
-			//ConnectorPolicies:              nil,
-			//Data:                           nil,
-			//HttpSessionMaxInactiveInterval: 0,
-			Id: data.Id.ValueString(),
-			//InsertInstant:                  0,
-			//Issuer:                         "",
-			//LastUpdateInstant:              0,
-			//LogoutURL:                      "",
-			Name: data.Name.ValueString(),
-			//State:                          "",
-			//ThemeId:                        "",
+	tenant := fusionauth.Tenant{
+		Id:   data.ID.ValueString(),
+		Name: data.Name.ValueString(),
+	}
 
-			//AccessControlConfiguration: fusionauth.TenantAccessControlConfiguration{
-			//	UiIPAccessControlListId: "",
-			//},
-			//CaptchaConfiguration: fusionauth.TenantCaptchaConfiguration{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	CaptchaMethod: "",
-			//	SecretKey:     "",
-			//	SiteKey:       "",
-			//	Threshold:     0,
-			//},
-			//EmailConfiguration: fusionauth.EmailConfiguration{
-			//	AdditionalHeaders:                    nil,
-			//	Debug:                                false,
-			//	DefaultFromEmail:                     "",
-			//	DefaultFromName:                      "",
-			//	EmailUpdateEmailTemplateId:           "",
-			//	EmailVerifiedEmailTemplateId:         "",
-			//	ForgotPasswordEmailTemplateId:        "",
-			//	Host:                                 "",
-			//	ImplicitEmailVerificationAllowed:     false,
-			//	LoginIdInUseOnCreateEmailTemplateId:  "",
-			//	LoginIdInUseOnUpdateEmailTemplateId:  "",
-			//	LoginNewDeviceEmailTemplateId:        "",
-			//	LoginSuspiciousEmailTemplateId:       "",
-			//	Password:                             "",
-			//	PasswordlessEmailTemplateId:          "",
-			//	PasswordResetSuccessEmailTemplateId:  "",
-			//	PasswordUpdateEmailTemplateId:        "",
-			//	Port:                                 0,
-			//	Properties:                           "",
-			//	Security:                             "",
-			//	SetPasswordEmailTemplateId:           "",
-			//	TwoFactorMethodAddEmailTemplateId:    "",
-			//	TwoFactorMethodRemoveEmailTemplateId: "",
-			//	Unverified: fusionauth.EmailUnverifiedOptions{
-			//		AllowEmailChangeWhenGated: false,
-			//		Behavior:                  "",
-			//	},
-			//	Username:                    "",
-			//	VerificationEmailTemplateId: "",
-			//	VerificationStrategy:        "",
-			//	VerifyEmail:                 false,
-			//	VerifyEmailWhenChanged:      false,
-			//},
-			//EventConfiguration: fusionauth.EventConfiguration{
-			//	Events: nil,
-			//},
-			//ExternalIdentifierConfiguration: fusionauth.ExternalIdentifierConfiguration{
-			//	AuthorizationGrantIdTimeToLiveInSeconds: 0,
-			//	ChangePasswordIdGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	ChangePasswordIdTimeToLiveInSeconds: 0,
-			//	DeviceCodeTimeToLiveInSeconds:       0,
-			//	DeviceUserCodeIdGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	EmailVerificationIdGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	EmailVerificationIdTimeToLiveInSeconds: 0,
-			//	EmailVerificationOneTimeCodeGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	ExternalAuthenticationIdTimeToLiveInSeconds: 0,
-			//	OneTimePasswordTimeToLiveInSeconds:          0,
-			//	PasswordlessLoginGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	PasswordlessLoginTimeToLiveInSeconds:  0,
-			//	PendingAccountLinkTimeToLiveInSeconds: 0,
-			//	RegistrationVerificationIdGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	RegistrationVerificationIdTimeToLiveInSeconds: 0,
-			//	RegistrationVerificationOneTimeCodeGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	Samlv2AuthNRequestIdTimeToLiveInSeconds: 0,
-			//	SetupPasswordIdGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	SetupPasswordIdTimeToLiveInSeconds: 0,
-			//	TrustTokenTimeToLiveInSeconds:      0,
-			//	TwoFactorIdTimeToLiveInSeconds:     0,
-			//	TwoFactorOneTimeCodeIdGenerator: fusionauth.SecureGeneratorConfiguration{
-			//		Length: 0,
-			//		Type:   "",
-			//	},
-			//	TwoFactorOneTimeCodeIdTimeToLiveInSeconds:          0,
-			//	TwoFactorTrustIdTimeToLiveInSeconds:                0,
-			//	WebAuthnAuthenticationChallengeTimeToLiveInSeconds: 0,
-			//	WebAuthnRegistrationChallengeTimeToLiveInSeconds:   0,
-			//},
-			//FailedAuthenticationConfiguration: fusionauth.FailedAuthenticationConfiguration{
-			//	ActionCancelPolicy: fusionauth.FailedAuthenticationActionCancelPolicy{
-			//		OnPasswordReset: false,
-			//	},
-			//	ActionDuration:      0,
-			//	ActionDurationUnit:  "",
-			//	EmailUser:           false,
-			//	ResetCountInSeconds: 0,
-			//	TooManyAttempts:     0,
-			//	UserActionId:        "",
-			//},
-			//FamilyConfiguration: fusionauth.FamilyConfiguration{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	AllowChildRegistrations:           false,
-			//	ConfirmChildEmailTemplateId:       "",
-			//	DeleteOrphanedAccounts:            false,
-			//	DeleteOrphanedAccountsDays:        0,
-			//	FamilyRequestEmailTemplateId:      "",
-			//	MaximumChildAge:                   0,
-			//	MinimumOwnerAge:                   0,
-			//	ParentEmailRequired:               false,
-			//	ParentRegistrationEmailTemplateId: "",
-			//},
-			//FormConfiguration: fusionauth.TenantFormConfiguration{
-			//	AdminUserFormId: "",
-			//},
-			//JwtConfiguration: fusionauth.JWTConfiguration{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	AccessTokenKeyId:             "",
-			//	IdTokenKeyId:                 "",
-			//	RefreshTokenExpirationPolicy: "",
-			//	RefreshTokenRevocationPolicy: fusionauth.RefreshTokenRevocationPolicy{
-			//		OnLoginPrevented:    false,
-			//		OnMultiFactorEnable: false,
-			//		OnPasswordChanged:   false,
-			//	},
-			//	RefreshTokenTimeToLiveInMinutes: 0,
-			//	RefreshTokenUsagePolicy:         "",
-			//	TimeToLiveInSeconds:             0,
-			//},
-			//LambdaConfiguration: fusionauth.TenantLambdaConfiguration{
-			//	ScimEnterpriseUserRequestConverterId:  "",
-			//	ScimEnterpriseUserResponseConverterId: "",
-			//	ScimGroupRequestConverterId:           "",
-			//	ScimGroupResponseConverterId:          "",
-			//	ScimUserRequestConverterId:            "",
-			//	ScimUserResponseConverterId:           "",
-			//},
-			//LoginConfiguration: fusionauth.TenantLoginConfiguration{
-			//	RequireAuthentication: false,
-			//},
-			//MaximumPasswordAge: fusionauth.MaximumPasswordAge{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	Days: 0,
-			//},
-			//MinimumPasswordAge: fusionauth.MinimumPasswordAge{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	Seconds: 0,
-			//},
-			//MultiFactorConfiguration: fusionauth.TenantMultiFactorConfiguration{
-			//	Authenticator: fusionauth.MultiFactorAuthenticatorMethod{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Algorithm:  "",
-			//		CodeLength: 0,
-			//		TimeStep:   0,
-			//	},
-			//	Email: fusionauth.MultiFactorEmailMethod{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		TemplateId: "",
-			//	},
-			//	LoginPolicy: "",
-			//	Sms: fusionauth.MultiFactorSMSMethod{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		MessengerId: "",
-			//		TemplateId:  "",
-			//	},
-			//},
-			//OauthConfiguration: fusionauth.TenantOAuth2Configuration{
-			//	ClientCredentialsAccessTokenPopulateLambdaId: "",
-			//},
-			//PasswordEncryptionConfiguration: fusionauth.PasswordEncryptionConfiguration{
-			//	EncryptionScheme:              "",
-			//	EncryptionSchemeFactor:        0,
-			//	ModifyEncryptionSchemeOnLogin: false,
-			//},
-			//PasswordValidationRules: fusionauth.PasswordValidationRules{
-			//	BreachDetection: fusionauth.PasswordBreachDetection{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		MatchMode:                 "",
-			//		NotifyUserEmailTemplateId: "",
-			//		OnLogin:                   "",
-			//	},
-			//	MaxLength: 0,
-			//	MinLength: 0,
-			//	RememberPreviousPasswords: fusionauth.RememberPreviousPasswords{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Count: 0,
-			//	},
-			//	RequireMixedCase: false,
-			//	RequireNonAlpha:  false,
-			//	RequireNumber:    false,
-			//	ValidateOnLogin:  false,
-			//},
-			//RateLimitConfiguration: fusionauth.TenantRateLimitConfiguration{
-			//	FailedLogin: fusionauth.RateLimitedRequestConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Limit:               0,
-			//		TimePeriodInSeconds: 0,
-			//	},
-			//	ForgotPassword: fusionauth.RateLimitedRequestConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Limit:               0,
-			//		TimePeriodInSeconds: 0,
-			//	},
-			//	SendEmailVerification: fusionauth.RateLimitedRequestConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Limit:               0,
-			//		TimePeriodInSeconds: 0,
-			//	},
-			//	SendPasswordless: fusionauth.RateLimitedRequestConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Limit:               0,
-			//		TimePeriodInSeconds: 0,
-			//	},
-			//	SendRegistrationVerification: fusionauth.RateLimitedRequestConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Limit:               0,
-			//		TimePeriodInSeconds: 0,
-			//	},
-			//	SendTwoFactor: fusionauth.RateLimitedRequestConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		Limit:               0,
-			//		TimePeriodInSeconds: 0,
-			//	},
-			//},
-			//RegistrationConfiguration: fusionauth.TenantRegistrationConfiguration{
-			//	BlockedDomains: nil,
-			//},
-			//ScimServerConfiguration: fusionauth.TenantSCIMServerConfiguration{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	ClientEntityTypeId: "",
-			//	Schemas:            nil,
-			//	ServerEntityTypeId: "",
-			//},
-			//SsoConfiguration: fusionauth.TenantSSOConfiguration{
-			//	DeviceTrustTimeToLiveInSeconds: 0,
-			//},
-			//UserDeletePolicy: fusionauth.TenantUserDeletePolicy{
-			//	Unverified: fusionauth.TimeBasedDeletePolicy{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		NumberOfDaysToRetain: 0,
-			//	},
-			//},
-			//UsernameConfiguration: fusionauth.TenantUsernameConfiguration{
-			//	Unique: fusionauth.UniqueUsernameConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		NumberOfDigits: 0,
-			//		Separator:      "",
-			//		Strategy:       "",
-			//	},
-			//},
-			//WebAuthnConfiguration: fusionauth.TenantWebAuthnConfiguration{
-			//	Enableable: fusionauth.Enableable{
-			//		Enabled: false,
-			//	},
-			//	BootstrapWorkflow: fusionauth.TenantWebAuthnWorkflowConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		AuthenticatorAttachmentPreference: "",
-			//		UserVerificationRequirement:       "",
-			//	},
-			//	Debug: false,
-			//	ReauthenticationWorkflow: fusionauth.TenantWebAuthnWorkflowConfiguration{
-			//		Enableable: fusionauth.Enableable{
-			//			Enabled: false,
-			//		},
-			//		AuthenticatorAttachmentPreference: "",
-			//		UserVerificationRequirement:       "",
-			//	},
-			//	RelyingPartyId:   "",
-			//	RelyingPartyName: "",
-			//},
-		},
-		//WebhookIds: nil,
+	payload := fusionauth.TenantRequest{
+		SourceTenantId: data.ID.ValueString(),
+		Tenant:         tenant,
 	}
 
 	res, faErrs, err := t.client.API.CreateTenant(t.client.TenantID, payload)
@@ -485,13 +138,13 @@ func (t *TenantResource) Create(ctx context.Context, req resource.CreateRequest,
 	tflog.Trace(ctx, "successfully saved created tenant into state")
 }
 
-func buildTenant(data *TenantResourceModel, t fusionauth.Tenant) {
-	data.Id = uuidtypes.NewUUIDValue(t.Id)
+func buildTenant(data *tenantResourceModel, t fusionauth.Tenant) {
+	data.ID = uuidtypes.NewUUIDValue(t.Id)
 	data.Name = types.StringValue(t.Name)
 }
 
 func (t *TenantResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var data *TenantResourceModel
+	var data *tenantResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
@@ -500,12 +153,12 @@ func (t *TenantResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	res, faErrs, err := t.client.API.RetrieveTenant(data.Id.ValueString())
+	res, faErrs, err := t.client.API.RetrieveTenant(data.ID.ValueString())
 	if reportedReadErrors(resp.Diagnostics, faErrs, err, "tenant") {
 		tflog.Trace(ctx, "error attempting to read a tenant resource")
 		return
 	}
-	tflog.Trace(ctx, "successfully read tenant resource ID: "+data.Id.ValueString())
+	tflog.Trace(ctx, "successfully read tenant resource ID: "+data.ID.ValueString())
 
 	buildTenant(data, res.Tenant)
 	tflog.Trace(ctx, "successfully converted read tenant response to domain model")
@@ -516,7 +169,7 @@ func (t *TenantResource) Read(ctx context.Context, req resource.ReadRequest, res
 }
 
 func (t *TenantResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var data *TenantResourceModel
+	var data *tenantResourceModel
 
 	// Read Terraform plan data into the model
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
@@ -538,7 +191,7 @@ func (t *TenantResource) Update(ctx context.Context, req resource.UpdateRequest,
 }
 
 func (t *TenantResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var data *TenantResourceModel
+	var data *tenantResourceModel
 
 	// Read Terraform prior state data into the model
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
