@@ -17,6 +17,34 @@ import (
 	"github.com/matthewhartstonge/terraform-plugin-framework-type-uuid/uuidtypes"
 )
 
+func newTenant(data *tenantResourceModel) fusionauth.Tenant {
+	return fusionauth.Tenant{
+		Id:   data.ID.ValueString(),
+		Name: data.Name.ValueString(),
+		CaptchaConfiguration: fusionauth.TenantCaptchaConfiguration{
+			Enableable: fusionauth.Enableable{
+				Enabled: data.Captcha.Enabled.ValueBool(),
+			},
+			CaptchaMethod: fusionauth.CaptchaMethod(data.Captcha.Method.ValueString()),
+			SecretKey:     data.Captcha.SecretKey.ValueString(),
+			SiteKey:       data.Captcha.SiteKey.ValueString(),
+			Threshold:     data.Captcha.Threshold.ValueFloat64(),
+		},
+	}
+}
+
+func setTenantState(data *tenantResourceModel, t fusionauth.Tenant) {
+	data.ID = uuidtypes.NewUUIDValue(t.Id)
+	data.Configured = types.BoolValue(t.Configured)
+	data.Name = types.StringValue(t.Name)
+
+	data.Captcha.Enabled = types.BoolValue(t.CaptchaConfiguration.Enabled)
+	data.Captcha.Method = types.StringValue(t.CaptchaConfiguration.CaptchaMethod.String())
+	data.Captcha.SecretKey = types.StringValue(t.CaptchaConfiguration.SecretKey)
+	data.Captcha.SiteKey = types.StringValue(t.CaptchaConfiguration.SiteKey)
+	data.Captcha.Threshold = types.Float64Value(t.CaptchaConfiguration.Threshold)
+}
+
 // tenantResourceModel describes the resource data model.
 type tenantResourceModel struct {
 	ID         uuidtypes.UUID `tfsdk:"id"`

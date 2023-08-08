@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/matthewhartstonge/terraform-plugin-framework-type-uuid/uuidtypes"
 
@@ -46,40 +45,26 @@ func (t *TenantResource) Schema(ctx context.Context, req resource.SchemaRequest,
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		Description:         "FusionAuth Tenant",
-		MarkdownDescription: "FusionAuth Tenant",
+		MarkdownDescription: "A FusionAuth Tenant is a named object that represents a discrete namespace for Users, Applications and Groups. A user is unique by email address or username within a tenant.\n\nTenants may be useful to support a multi-tenant application where you wish to use a single instance of FusionAuth but require the ability to have duplicate users across the tenants in your own application. In this scenario a user may exist multiple times with the same email address and different passwords across tenants.\n\nTenants may also be useful in a test or staging environment to allow multiple users to call APIs and create and modify users without possibility of collision.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				CustomType:          uuidtypes.UUIDType{},
-				Computed:            true,
 				Description:         "The unique identifier for this Tenant.",
 				MarkdownDescription: "The unique identifier for this Tenant.",
+				Computed:            true,
+			},
+			"configured": schema.BoolAttribute{
+				Computed:            true,
+				Description:         "Indicates the tenant has been configured. It is always true, except for default tenant when the setup wizard has not been completed, in which case it is false.",
+				MarkdownDescription: "Indicates the tenant has been configured. It is always `true`, except for default tenant when the setup wizard has not been completed, in which case it is `false`.",
 			},
 			"name": schema.StringAttribute{
-				Required:            true,
 				Description:         "The unique name of the Tenant.",
 				MarkdownDescription: "The unique name of the Tenant.",
+				Required:            true,
 			},
-			//"captcha": schema.ListNestedAttribute{
-			//	NestedObject:        schema.NestedAttributeObject{},
-			//	Optional:            true,
-			//	Description:         "",
-			//	MarkdownDescription: "",
-			//	DeprecationMessage:  "",
-			//	Validators:          nil,
-			//	PlanModifiers:       nil,
-			//	Default:             nil,
-			//},
-			//"email": schema.ListNestedAttribute{
-			//	NestedObject:        schema.NestedAttributeObject{},
-			//	Optional:            true,
-			//	Description:         "",
-			//	MarkdownDescription: "",
-			//	DeprecationMessage:  "",
-			//	Validators:          nil,
-			//	PlanModifiers:       nil,
-			//	Default:             nil,
-			//},
+			"captcha": tenantCaptchaModelSchema(),
 		},
 	}
 }
@@ -104,23 +89,17 @@ func (t *TenantResource) Configure(ctx context.Context, req resource.ConfigureRe
 }
 
 func (t *TenantResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var data *tenantResourceModel
+	var plan *tenantResourceModel
 
 	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tenant := fusionauth.Tenant{
-		Id:   data.ID.ValueString(),
-		Name: data.Name.ValueString(),
-	}
-
 	payload := fusionauth.TenantRequest{
-		SourceTenantId: data.ID.ValueString(),
-		Tenant:         tenant,
+		Tenant: newTenant(plan),
 	}
 
 	res, faErrs, err := t.client.API.CreateTenant(t.client.TenantID, payload)
@@ -130,83 +109,84 @@ func (t *TenantResource) Create(ctx context.Context, req resource.CreateRequest,
 	}
 	tflog.Trace(ctx, "successfully created a tenant resource")
 
-	buildTenant(data, res.Tenant)
+	setTenantState(plan, res.Tenant)
 	tflog.Trace(ctx, "successfully converted created tenant response to domain model")
 
 	// Save data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 	tflog.Trace(ctx, "successfully saved created tenant into state")
 }
 
-func buildTenant(data *tenantResourceModel, t fusionauth.Tenant) {
-	data.ID = uuidtypes.NewUUIDValue(t.Id)
-	data.Name = types.StringValue(t.Name)
-}
-
 func (t *TenantResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var data *tenantResourceModel
+	var state *tenantResourceModel
 
 	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	res, faErrs, err := t.client.API.RetrieveTenant(data.ID.ValueString())
+	res, faErrs, err := t.client.API.RetrieveTenant(state.ID.ValueString())
 	if reportedReadErrors(resp.Diagnostics, faErrs, err, "tenant") {
 		tflog.Trace(ctx, "error attempting to read a tenant resource")
 		return
 	}
-	tflog.Trace(ctx, "successfully read tenant resource ID: "+data.ID.ValueString())
+	tflog.Trace(ctx, "successfully read tenant resource ID: "+state.ID.ValueString())
 
-	buildTenant(data, res.Tenant)
+	setTenantState(state, res.Tenant)
 	tflog.Trace(ctx, "successfully converted read tenant response to domain model")
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 	tflog.Trace(ctx, "successfully saved read tenant into state")
 }
 
 func (t *TenantResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var data *tenantResourceModel
+	var plan *tenantResourceModel
 
 	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update example, got error: %s", err))
-	//     return
-	// }
+	payload := fusionauth.TenantRequest{
+		Tenant: newTenant(plan),
+	}
+
+	res, faErrs, err := t.client.API.UpdateTenant(plan.ID.ValueString(), payload)
+	if reportedUpdateErrors(resp.Diagnostics, faErrs, err, "tenant") {
+		tflog.Trace(ctx, "error attempting to read a tenant resource")
+		return
+	}
+	tflog.Trace(ctx, "successfully updated tenant resource ID: "+plan.ID.ValueString())
+
+	setTenantState(plan, res.Tenant)
+	tflog.Trace(ctx, "successfully converted updated tenant response to domain model")
 
 	// Save updated data into Terraform state
-	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
+	tflog.Trace(ctx, "successfully saved updated tenant into state")
 }
 
 func (t *TenantResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var data *tenantResourceModel
+	var state *tenantResourceModel
 
 	// Read Terraform prior state data into the model
-	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	_, faErrs, err := t.client.API.DeleteTenant(state.ID.ValueString())
+	if reportedDeleteErrors(resp.Diagnostics, faErrs, err, "tenant") {
+		tflog.Trace(ctx, "error attempting to delete a tenant resource")
+		return
+	}
 
-	// If applicable, this is a great opportunity to initialize any necessary
-	// provider client data and make a call using it.
-	// httpResp, err := r.client.Do(httpReq)
-	// if err != nil {
-	//     resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete example, got error: %s", err))
-	//     return
-	// }
+	tflog.Trace(ctx, "successfully deleted tenant resource ID: "+state.ID.ValueString())
 }
 
 func (t *TenantResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
