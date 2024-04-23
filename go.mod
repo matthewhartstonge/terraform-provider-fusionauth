@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/FusionAuth/go-client v0.0.0-20230313185644-4aefe6d7b4c8
-	github.com/hashicorp/terraform-plugin-docs v0.19.0
+	github.com/hashicorp/terraform-plugin-docs v0.19.1
 	github.com/hashicorp/terraform-plugin-framework v1.8.0
 	github.com/hashicorp/terraform-plugin-go v0.22.2
 )
