@@ -1,5 +1,7 @@
 # Terraform FusionAuth Provider
 
+> I've decided to archive this project as I've turned my efforts to other matters. Now that FusionAuth have taken control and maintenance over the community Terraform provider I suspect my efforts and aims/goals for this rebuild won't be needed as much.
+
 The [FusionAuth Provider](https://registry.terraform.io/providers/matthewhartstonge/fusionauth/latest/docs)
 allows [Terraform](https://terraform.io) to manage [FusionAuth](https://fusionauth.io) resources.
 
